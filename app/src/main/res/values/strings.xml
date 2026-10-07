@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SmartPantry</string>
+    <string name="no_items_in_pantry">No items in your pantry</string>
+    <string name="add_pantry_item">Add Pantry Item</string>
 </resources>

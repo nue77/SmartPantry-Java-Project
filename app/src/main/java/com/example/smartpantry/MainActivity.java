@@ -1,9 +1,9 @@
 package com.example.smartpantry;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.smartpantry.data.PantryItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /** Pantry List screen: shows every ingredient currently in the pantry. */
@@ -51,15 +50,21 @@ public class MainActivity extends AppCompatActivity {
             tvEmpty.setVisibility(items == null || items.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
-        // TEMPORARY: lets us test the list before the Add/Edit screen exists.
-        fabAdd.setOnClickListener(v -> {
-            long threeDays = 3L * 24 * 60 * 60 * 1000;
-            viewModel.insert(new PantryItem("Test item", 1, "pcs",
-                    System.currentTimeMillis() + threeDays));
-        });
+        // "+" button: open the form in add mode (no extras).
+        fabAdd.setOnClickListener(v ->
+                startActivity(new Intent(this, AddEditActivity.class)));
 
-        // TEMPORARY: replaced by opening the Edit screen next step.
-        adapter.setOnItemClickListener(item ->
-                Toast.makeText(this, "Clicked: " + item.name, Toast.LENGTH_SHORT).show());
+        // Tapping a row: open the same form in edit mode, passing the item's data.
+        adapter.setOnItemClickListener(item -> {
+            Intent intent = new Intent(this, AddEditActivity.class);
+            intent.putExtra(AddEditActivity.EXTRA_ID, item.id);
+            intent.putExtra(AddEditActivity.EXTRA_NAME, item.name);
+            intent.putExtra(AddEditActivity.EXTRA_QUANTITY, item.quantity);
+            intent.putExtra(AddEditActivity.EXTRA_UNIT, item.unit);
+            if (item.expiryDate != null) {
+                intent.putExtra(AddEditActivity.EXTRA_EXPIRY, item.expiryDate);
+            }
+            startActivity(intent);
+        });
     }
 }

@@ -66,5 +66,7 @@ public class MainActivity extends AppCompatActivity {
             }
             startActivity(intent);
         });
+
+        BottomNavHelper.setup(this, R.id.nav_pantry);
     }
 }

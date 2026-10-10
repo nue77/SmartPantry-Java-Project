@@ -21,6 +21,9 @@ public interface RecipeDao {
     @Query("SELECT * FROM recipes ORDER BY name COLLATE NOCASE")
     List<Recipe> getAllRecipes();
 
+    @Query("SELECT * FROM recipes ORDER BY name COLLATE NOCASE")
+    List<Recipe> getAllRecipesNow();
+
     @Query("SELECT * FROM recipes WHERE id = :id")
     Recipe getRecipeById(long id);
 

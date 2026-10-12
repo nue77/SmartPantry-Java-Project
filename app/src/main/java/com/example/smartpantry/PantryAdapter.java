@@ -1,5 +1,7 @@
 package com.example.smartpantry;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +26,12 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.ViewHol
         void onItemClick(PantryItem item);
     }
 
+    private static final long ONE_DAY = 24L * 60 * 60 * 1000;
+    private static final long SOON_WINDOW = 3 * ONE_DAY;  // "expiring soon" = within 3 days
+    private static final int WARNING_COLOR = Color.parseColor("#D32F2F");
+
     private OnItemClickListener listener;
+    private boolean highlightExpiring = true;  // controlled by the Settings screen
 
     public PantryAdapter() {
         super(DIFF_CALLBACK);
@@ -32,6 +39,14 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.ViewHol
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
+    }
+
+    /** Turns the expiring-soon highlighting on or off, then redraws the rows. */
+    public void setHighlightExpiring(boolean enabled) {
+        if (this.highlightExpiring != enabled) {
+            this.highlightExpiring = enabled;
+            notifyDataSetChanged();  // the items did not change, only how they look
+        }
     }
 
     // Lets the list animate only the rows that actually changed.
@@ -71,10 +86,23 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.ViewHol
                 : String.valueOf(item.quantity);
         holder.tvQuantity.setText(qty + " " + item.unit);
 
+        // Always restore the normal colour first, because rows are recycled.
+        holder.tvExpiry.setTextColor(holder.defaultExpiryColors);
+
         if (item.expiryDate != null) {
             String date = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
                     .format(new Date(item.expiryDate));
-            holder.tvExpiry.setText("Expires: " + date);
+            long now = System.currentTimeMillis();
+
+            if (highlightExpiring && item.expiryDate + ONE_DAY <= now) {
+                holder.tvExpiry.setText("EXPIRED: " + date);
+                holder.tvExpiry.setTextColor(WARNING_COLOR);
+            } else if (highlightExpiring && item.expiryDate <= now + SOON_WINDOW) {
+                holder.tvExpiry.setText("Expiring soon: " + date);
+                holder.tvExpiry.setTextColor(WARNING_COLOR);
+            } else {
+                holder.tvExpiry.setText("Expires: " + date);
+            }
         } else {
             holder.tvExpiry.setText("No expiry date");
         }
@@ -86,12 +114,14 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.ViewHol
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView tvName, tvQuantity, tvExpiry;
+        final ColorStateList defaultExpiryColors;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tvName);
             tvQuantity = itemView.findViewById(R.id.tvQuantity);
             tvExpiry = itemView.findViewById(R.id.tvExpiry);
+            defaultExpiryColors = tvExpiry.getTextColors();
         }
     }
 }

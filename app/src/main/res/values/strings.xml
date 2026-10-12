@@ -4,7 +4,9 @@
     <string name="add_pantry_item">Add Pantry Item</string>
     <string name="title_pantry">Pantry</string>
     <string name="title_recipes">Recipes</string>
+    <string name="title_settings">Settings</string>
     <string name="no_recipes_suggested">No recipes can be made with current pantry items</string>
     <string name="ingredients_header">Ingredients</string>
     <string name="instructions_header">Instructions</string>
+    <string name="pref_expiring_alerts_title">Highlight expiring ingredients</string>
 </resources>

@@ -23,6 +23,8 @@ public class BottomNavHelper {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             } else if (id == R.id.nav_recipes) {
                 intent = new Intent(activity, SuggestedRecipesActivity.class);
+            } else if (id == R.id.nav_settings) {
+                intent = new Intent(activity, SettingsActivity.class);
             } else {
                 return false;
             }

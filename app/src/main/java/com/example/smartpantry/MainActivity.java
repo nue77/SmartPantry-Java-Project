@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class MainActivity extends AppCompatActivity {
 
     private PantryViewModel viewModel;
+    private PantryAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         TextView tvEmpty = findViewById(R.id.tvEmpty);
         FloatingActionButton fabAdd = findViewById(R.id.fabAdd);
 
-        PantryAdapter adapter = new PantryAdapter();
+        adapter = new PantryAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -68,5 +69,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         BottomNavHelper.setup(this, R.id.nav_pantry);
+    }
+
+    // Pick up the Settings toggle every time we come back to this screen.
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.setHighlightExpiring(SettingsActivity.isExpiringAlertsEnabled(this));
     }
 }
